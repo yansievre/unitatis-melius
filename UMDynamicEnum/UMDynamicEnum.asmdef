@@ -1,0 +1,18 @@
+{
+    "name": "UMLoggerEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:41cea95a26aeef6439ee2487d5663f3b"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
