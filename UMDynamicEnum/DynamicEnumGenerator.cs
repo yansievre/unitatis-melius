@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using Plugins.UMDynamicEnum.Runtime;
 using UnityEditor;
-using UnityEditor.Compilation;
 using Assembly = System.Reflection.Assembly;
 
 namespace Plugins.UMDynamicEnum
@@ -37,12 +36,12 @@ namespace Plugins.UMDynamicEnum
             return attributes.OfType<T>().ToArray();
         }
         [UnityEditor.Callbacks.DidReloadScripts]
-        private static void CreateAssetWhenReady()
+        private static void AfterScriptReload()
         {
             if (PauseGeneration) return;
             if(EditorApplication.isCompiling || EditorApplication.isUpdating)
             {
-                EditorApplication.delayCall += CreateAssetWhenReady;
+                EditorApplication.delayCall += AfterScriptReload;
                 return;
             }
  
@@ -70,9 +69,11 @@ namespace Plugins.UMDynamicEnum
                     cache.Add(data.EnumName,data);
                 }
             }
-            
+
+            var definedInAssembly = typeof(EnumProviderAttribute).Assembly.GetName().Name;
             foreach (var assembly in allAssemblies)
             {
+                if (assembly.GetReferencedAssemblies().All(a => a.Name != definedInAssembly)) continue;
                 ProcessAssembly(assembly, cache);
             }
 
