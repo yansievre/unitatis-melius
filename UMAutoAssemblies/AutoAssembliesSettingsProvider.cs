@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -60,6 +61,26 @@ namespace Plugins.UMAutoAssemblies
         public override void OnGUI(string searchContext)
         {
             _propertyTree.Draw(false);
+            
+            /*
+            if( Event.current.commandName == "ObjectSelectorUpdated" && (EditorGUIUtility.GetObjectPickerControlID() ==  AutoAssembliesSettings.IgnoredAssemblyId ||EditorGUIUtility.GetObjectPickerControlID() ==  AutoAssembliesSettings.IgnoredAssemblyId) )
+            {
+                var obj = (AssemblyDefinitionAsset)EditorGUIUtility.GetObjectPickerObject();
+                if (obj == null) return;
+                var path = AutoAssembliesSettings.SettingsAssetPath;
+                var settings = AssetDatabase.LoadAssetAtPath<AutoAssembliesSettings>(path);
+                if (settings == null) return;
+                if (EditorGUIUtility.GetObjectPickerControlID() == AutoAssembliesSettings.IgnoredAssemblyId)
+                {
+                    if (settings.ignoredAssemblies.Contains(obj.name) || obj.name == "UMAutoAssemblies.Editor") return;
+                    settings.ignoredAssemblies.Add(obj.name);
+                }else if (EditorGUIUtility.GetObjectPickerControlID() == AutoAssembliesSettings.InjectedAssemblyId)
+                {
+                    if (settings.injectedAssemblies.Contains(obj.name) || obj.name == "UMAutoAssemblies.Editor") return;
+                    settings.injectedAssemblies.Add(obj.name);
+                }
+            }
+            */
             m_CustomSettings.ApplyModifiedProperties();
         }
 

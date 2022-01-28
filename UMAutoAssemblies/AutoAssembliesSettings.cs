@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using Plugins.UMEditableAssembly;
 using Plugins.UMEditorUtility;
 using Plugins.UMUtility;
 using Sirenix.OdinInspector;
@@ -9,6 +11,7 @@ using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEditorInternal;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Plugins.UMAutoAssemblies
 {
@@ -24,72 +27,40 @@ namespace Plugins.UMAutoAssemblies
     [Serializable]
     internal class AutoAssembliesSettings : ScriptableObject
     {
+        private bool _updateRequired = false;
         public const string SettingsAssetPath =
             "Assets/Plugins/unitatis-melius/UMAutoAssemblies/AutoAssembliesSettings.asset";
 
-        [SerializeField,ListDrawerSettings(CustomAddFunction = "AddIgnoredAssembly"),ReadOnly,InlineProperty,OnValueChanged("Update",true)]
-        internal List<ReadonlyString> ignoredAssemblies;
+        [AssetSelector(DrawDropdownForListElements = false,ExcludeExistingValuesInList = true,FlattenTreeView = true,IsUniqueList = true)]
+        [SerializeField,InlineProperty,OnValueChanged("OnChange",true)]
+        internal List<AssemblyDefinitionAsset> ignoredAssemblies;
         
-        [SerializeField,ListDrawerSettings(CustomAddFunction = "AddInjectedAssembly"),ReadOnly,InlineProperty,OnValueChanged("Update",true)]
-        internal List<ReadonlyString> injectedAssemblies;
+        
+        
+        [AssetSelector(DrawDropdownForListElements = false,ExcludeExistingValuesInList = true,FlattenTreeView = true,IsUniqueList = true)]
+        [SerializeField,InlineProperty,OnValueChanged("OnChange",true)]
+        internal List<AssemblyDefinitionAsset> injectedAssemblies;
         
         [SerializeField]
         internal List<FolderReference> injectionTargets;
+        
+        
+        
 
-        private ReadonlyString AddIgnoredAssembly()
+
+        private void OnChange()
         {
-            var def = GetAsmDef();
-            if (ignoredAssemblies.Contains(def.name)|| def.name == "UMAutoAssemblies.Editor") return null;
-            return def.name;
+            _updateRequired = true;
         }
         
-        private string AddInjectedAssembly()
-        {
-            var def = GetAsmDef();
-            if (def.name == "UMAutoAssemblies.Editor") return null;
-            return def.name;
-        }
-
-        private AssemblyDefinitionAsset GetAsmDef()
-        {
-            EditorGUIUtility.ShowObjectPicker<AssemblyDefinitionAsset>(null,false,"",0);
-            return (AssemblyDefinitionAsset) EditorGUIUtility.GetObjectPickerObject();
-        }
-
-        private static Dictionary<string, Assembly> _cache;
-        
-        [Button]
+        [Button][InfoBox("Update Required!",InfoMessageType.Error,nameof(_updateRequired))]
         public void Update()
         {
-            var allAssemblies =CompilationPipeline.GetAssemblies();
-            foreach (var assembly in allAssemblies)
-            {
-                if (ignoredAssemblies.Contains(assembly.name)||assembly.name=="UMAutoAssemblies.Editor") continue;
-                var path = CompilationPipeline.GetAssemblyDefinitionFilePathFromAssemblyName(assembly.name);
-                if (injectionTargets.Any(x => path.IsSubPathOf(AssetDatabase.GUIDToAssetPath(x.guid))))
-                {
-                    Inject(assembly,injectedAssemblies);
-                }
-            }
-        }
+            AutoAssemblyInjector.UpdateAll();
 
-        public static void Inject(Assembly target, List<ReadonlyString> toInject)
-        {
-            if (_cache == null)
-            {
-                _cache = new Dictionary<string, Assembly>();
-                var allAssemblies =CompilationPipeline.GetAssemblies();
-                foreach (var assembly in allAssemblies)
-                {
-                    if (toInject.Contains(assembly.name))
-                    {
-                        _cache.Add(assembly.name,assembly);
-                    }
-                }
-            }
-
-            var assemblies = toInject.Select(x => _cache[x]).Where(x=>!target.assemblyReferences.Contains(x)).ToArray();
-            target.assemblyReferences.AddRange(assemblies);
+            _updateRequired = false;
         }
     }
+
+    
 }
