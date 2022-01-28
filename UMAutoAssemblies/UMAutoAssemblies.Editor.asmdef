@@ -1,12 +1,11 @@
 {
-    "name": "UMUtility.Editor",
+    "name": "UMAutoAssemblies.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:0664a72f3212f0c47bce6e1661fb0ad7"
+        "GUID:0664a72f3212f0c47bce6e1661fb0ad7",
+        "GUID:44eb7e89a6494be408fbe901b73f9f1d"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
