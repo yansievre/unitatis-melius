@@ -1,0 +1,16 @@
+{
+    "name": "UMCC.Core",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1cb9796be654ee54a961f27083376bf5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
