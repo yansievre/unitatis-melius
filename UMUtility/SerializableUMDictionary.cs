@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Sirenix.Serialization;
 using UnityEngine;
 using Utility;
 
@@ -9,10 +8,10 @@ namespace Plugins.UMUtility
     [Serializable]
     public abstract class SerializableUMDictionary<TKey, TValue> : UMDictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
-        [NonSerialized,OdinSerialize, HideInInspector]
+        [NonSerialized, HideInInspector]
         private List<TKey> keyData = new List<TKey>();
 	
-        [NonSerialized,OdinSerialize, HideInInspector]
+        [NonSerialized, HideInInspector]
         private List<TValue> valueData = new List<TValue>();
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()

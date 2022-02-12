@@ -1,6 +1,5 @@
 {
     "name": "UMAutoAssemblies.Editor",
-    "rootNamespace": "",
     "references": [
         "GUID:0664a72f3212f0c47bce6e1661fb0ad7",
         "GUID:44eb7e89a6494be408fbe901b73f9f1d",
@@ -14,7 +13,15 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
+    "defineConstraints": [
+        "ODIN_INSPECTOR"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.umbra",
+            "expression": "",
+            "define": ""
+        }
+    ],
     "noEngineReferences": false
 }

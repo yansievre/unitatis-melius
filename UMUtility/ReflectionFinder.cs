@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Sirenix.Utilities;
 
 namespace Plugins.UMUtility
 {
@@ -40,7 +39,7 @@ namespace Plugins.UMUtility
                 if ((!assembly.GlobalAssemblyCache) && ((assembly.GetName().Name == definedIn) || assembly.GetReferencedAssemblies().Any(a => a.Name == definedIn)))
                     foreach (Type type in assembly.GetTypes())
                     {
-                        if (type.IsCastableTo(parentType))
+                        if (parentType.IsAssignableFrom(type))
                         {
                             list.Add(type);   
                         }

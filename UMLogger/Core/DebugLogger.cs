@@ -31,16 +31,27 @@ namespace UMLogger.Plugins.UMLogger.Core
 
         private string GetColor(LogType logType)
         {
-            Color color = logType switch
+            Color color;
+            switch (logType)
             {
-                LogType.Error => Color.red,
-                LogType.Warning => Color.yellow,
-                LogType.Log => Color.white,
-                LogType.Exception => Color.magenta,
-                LogType.Assert =>  Color.blue,
-                _ => throw new ArgumentOutOfRangeException(nameof(logType), logType, null)
-            };
-
+                case LogType.Error:
+                    color= Color.red;
+                    break;
+                case LogType.Assert:
+                    color= Color.blue;
+                    break;
+                case LogType.Warning:
+                    color= Color.yellow;
+                    break;
+                case LogType.Log:
+                    color= Color.white;
+                    break;
+                case LogType.Exception:
+                    color= Color.magenta;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(logType), logType, null);
+            }
             return ColorUtility.ToHtmlStringRGB(color);
         }
 

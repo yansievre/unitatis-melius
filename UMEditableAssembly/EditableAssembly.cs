@@ -109,7 +109,7 @@ namespace Plugins.UMEditableAssembly
         public bool AddAssembly(AssemblyDefinitionAsset asset)
         {
             var path = AssetDatabase.GetAssetPath(asset);
-            var guid = AssetDatabase.GUIDFromAssetPath(path);
+            var guid = AssetDatabase.AssetPathToGUID(path);
             var st = "GUID:" + guid.ToString();
             if (!_fakeClass.references.Contains(st))
             {
