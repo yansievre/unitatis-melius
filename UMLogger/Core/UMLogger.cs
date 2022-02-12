@@ -6,11 +6,11 @@ namespace UMLogger.Plugins.UMLogger.Core
     
     internal class UMLogger : IUMLogger
     {
-        private Object _context;
+        private Type _context;
         private IUMInternalLogger[] _internalLoggers;
         private LogLevel _allowedLogLevel;
 
-        public UMLogger(object context, IUMInternalLogger[] internalLoggers, LogLevel allowedLogLevel)
+        public UMLogger(Type context, IUMInternalLogger[] internalLoggers, LogLevel allowedLogLevel)
         {
             this._context = context;
             _internalLoggers = internalLoggers;
