@@ -1,0 +1,25 @@
+{
+    "name": "UMDataSystem",
+    "references": [
+        "GUID:d188a3fa8b1410d459d26e7676bcc208",
+        "GUID:0664a72f3212f0c47bce6e1661fb0ad7",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:04389a88f8d267749a4b33c1945cf8af",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "",
+            "define": ""
+        }
+    ],
+    "noEngineReferences": false
+}
