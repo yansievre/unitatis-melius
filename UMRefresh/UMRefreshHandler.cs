@@ -16,7 +16,7 @@ namespace Plugins.UMRefresh
         {
         }
         
-        [Shortcut("Refresh",null,KeyCode.R,ShortcutModifiers.Action)]
+        [Shortcut("UnitatisMelius/Refresh",null,KeyCode.R,ShortcutModifiers.Action)]
         private static void Refresh()
         {
             if (_preRefreshListeners == null) _preRefreshListeners = new List<UMRefreshListener>();

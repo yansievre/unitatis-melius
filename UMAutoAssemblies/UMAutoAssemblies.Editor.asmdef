@@ -16,12 +16,6 @@
     "defineConstraints": [
         "ODIN_INSPECTOR"
     ],
-    "versionDefines": [
-        {
-            "name": "com.unity.modules.umbra",
-            "expression": "",
-            "define": ""
-        }
-    ],
+    "versionDefines": [],
     "noEngineReferences": false
 }
