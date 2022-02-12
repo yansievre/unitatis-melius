@@ -1,7 +1,8 @@
 ﻿using System.Threading;
 using Cysharp.Threading.Tasks;
+using Plugins.UMDataSystem.Impl;
 
-namespace DataSystem.Abstract
+namespace Plugins.UMDataSystem.Abstract
 {
     
     public interface IDataReader : IDataInfo
@@ -13,7 +14,7 @@ namespace DataSystem.Abstract
         /// <returns></returns>
         UniTask<string> ReadData(CancellationToken token);
 
-        bool FileExists();
+        DataState CheckFile();
     }
 
     public interface IDataReader<T> : IDataReader

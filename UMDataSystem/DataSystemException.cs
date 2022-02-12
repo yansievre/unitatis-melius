@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataSystem
+namespace Plugins.UMDataSystem
 {
     class DataSystemException : Exception
     {

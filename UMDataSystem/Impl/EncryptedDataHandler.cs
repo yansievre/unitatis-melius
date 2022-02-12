@@ -2,11 +2,11 @@
 using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DataSystem.Abstract;
+using Plugins.UMDataSystem.Abstract;
 using Plugins.UMFileUtility;
 using UnityEngine;
 
-namespace DataSystem.Impl
+namespace Plugins.UMDataSystem.Impl
 {
     /// <summary>
     /// This data handler will save data to Assets/Saves
@@ -45,9 +45,9 @@ namespace DataSystem.Impl
             }
         }
 
-        public bool FileExists()
+        public DataState CheckFile()
         {
-            return File.Exists(DataPath);
+            return File.Exists(DataPath)?DataState.Found:DataState.NotFound;
         }
 
         private void EnsureDirectory()

@@ -1,20 +1,29 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DataSystem.Abstract;
+using Plugins.UMDataSystem.Abstract;
 using UMLogger.Plugins.UMLogger.Interfaces;
 
-namespace DataSystem.Impl
+namespace Plugins.UMDataSystem.Impl
 {
     internal class StateDataManager<T> : IStateDataManager<T>
     {
-        private readonly IDataHandler<T> _dataHandler;
+        private readonly IDataWriter<T> _dataWriter;
+        private readonly IDataReader<T>[] _dataReaders;
         private readonly IUMLogger _logger;
         private T _instance;
 
-        public StateDataManager(IDataHandler<T> dataHandler, IUMLogger logger)
+        public StateDataManager(IDataReader<T>[] readers, IDataWriter<T> writer, IUMLogger logger)
         {
-            _dataHandler = dataHandler;
+            _dataWriter = writer;
+            _dataReaders = readers;
+            _logger = logger;
+        }
+        public StateDataManager(IDataHandler<T> dataHandler,IDataReader<T>[] alternativeReaders, IUMLogger logger)
+        {
+            _dataWriter = dataHandler;
+            _dataReaders = alternativeReaders.Prepend(dataHandler).ToArray();
             _logger = logger;
         }
 
@@ -27,9 +36,31 @@ namespace DataSystem.Impl
             _instance = state;
         }
 
-        public UniTask<T> LoadStateData(CancellationToken token)
+        public async UniTask<T> LoadStateData(CancellationToken token)
         {
-            return _dataHandler.ReadObject(token);
+            foreach (var dataReader in _dataReaders)
+            {
+                var fileState = dataReader.CheckFile();
+                switch (fileState)
+                {
+                    case DataState.NotFound:
+                        continue;
+                    case DataState.Unknown:
+                    case DataState.Found:
+                        try
+                        {
+                            var result = await dataReader.ReadObject(token);
+                        }
+                        catch (Exception e)
+                        {
+                           _logger.LogWarning($"Failed to read data with {dataReader.GetType().Name}"); 
+                        }
+                        continue;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            throw new DataSystemException("Failed to read data from any source");
         }
 
         public async UniTask<bool> LoadStateDataAndActivate(CancellationToken token)
@@ -50,7 +81,7 @@ namespace DataSystem.Impl
 
         public UniTask<bool> SaveStateData(CancellationToken token)
         {
-            return _dataHandler.WriteData(_instance, token);
+            return _dataWriter.WriteData(_instance, token);
         }
     }
 }

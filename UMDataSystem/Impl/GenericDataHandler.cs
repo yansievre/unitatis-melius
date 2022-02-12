@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using Cysharp.Threading.Tasks;
-using DataSystem.Abstract;
+using Plugins.UMDataSystem.Abstract;
 
-namespace DataSystem.Impl
+namespace Plugins.UMDataSystem.Impl
 {
     public class GenericDataHandler<T> : IDataHandler<T>
     {
@@ -31,9 +31,9 @@ namespace DataSystem.Impl
             return _dataReaderImpl.ReadData(token);
         }
 
-        public bool FileExists()
+        public DataState CheckFile()
         {
-            return _dataReaderImpl.FileExists();
+            return _dataReaderImpl.CheckFile();
         }
 
         public UniTask<bool> WriteData(T targetObject, CancellationToken token)
