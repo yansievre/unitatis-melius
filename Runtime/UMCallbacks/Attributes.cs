@@ -3,19 +3,27 @@
 namespace UM.Runtime.UMRefresh
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class OnRefreshAttribute : Attribute
+    public class Attributes : Attribute
     {
         public bool IsPreRefresh { get; }
-        public OnRefreshAttribute(bool isPreRefresh = false)
+        public Attributes(bool isPreRefresh = false)
         {
             IsPreRefresh = isPreRefresh;
         }
     }
     
     [AttributeUsage(AttributeTargets.Method)]
-    public class OnPreRefreshAttribute : OnRefreshAttribute
+    public class OnPreRefreshAttribute : Attributes
     {
         public OnPreRefreshAttribute() : base(true)
+        {
+        }
+    }
+    
+    [AttributeUsage(AttributeTargets.Method)]
+    public class OnDeletedAttribute : Attribute
+    {
+        public OnDeletedAttribute()
         {
         }
     }

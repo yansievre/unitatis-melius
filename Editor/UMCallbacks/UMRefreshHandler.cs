@@ -13,15 +13,15 @@ namespace UM.Editor.UMRefresh
 {
     public static class UMRefreshHandler
     {
-        private static ReflectionFinder.AttributeUsage<OnRefreshAttribute>[] S_PreRefreshMethods;
-        private static ReflectionFinder.AttributeUsage<OnRefreshAttribute>[] S_PostRefreshMethods;
+        private static ReflectionFinder.AttributeUsage<Attributes>[] S_PreRefreshMethods;
+        private static ReflectionFinder.AttributeUsage<Attributes>[] S_PostRefreshMethods;
         
         [InitializeOnLoadMethod]
         private static void Initialize()
         {
             RefreshExtensions.OnRefreshRequest -= RefreshObject;
             RefreshExtensions.OnRefreshRequest += RefreshObject;
-            var methods = ReflectionFinder.FindAttributeUsagesOnMethods<OnRefreshAttribute>();
+            var methods = ReflectionFinder.FindAttributeUsagesOnMethods<Attributes>();
             S_PreRefreshMethods = methods.Where(x => x.attribute.IsPreRefresh).ToArray();
             S_PostRefreshMethods = methods.Where(x => !x.attribute.IsPreRefresh).ToArray();
         }
