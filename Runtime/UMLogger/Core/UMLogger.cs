@@ -3,7 +3,6 @@ using UM.Runtime.UMLogger.Interfaces;
 
 namespace UM.Runtime.UMLogger.Core
 {
-    
     internal class UMLogger : IUMLogger
     {
         private Type _context;

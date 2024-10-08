@@ -1,15 +1,14 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using Sirenix.Utilities;
-using UM.Runtime.UMRefresh;
+using UM.Runtime.UMCallbacks;
 using UM.Runtime.UMUtility;
 using UnityEditor;
 using UnityEditor.ShortcutManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace UM.Editor.UMRefresh
+namespace UM.Editor.UMCallbacks
 {
     public static class UMRefreshHandler
     {

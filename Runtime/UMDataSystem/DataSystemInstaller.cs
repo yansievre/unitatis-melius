@@ -1,9 +1,9 @@
 #if ZENJECT
-using Plugins.UMDataSystem.Impl;
+using UM.Runtime.UMDataSystem.Impl;
 using UnityEngine;
 using Zenject;
 
-namespace Plugins.UMDataSystem
+namespace UM.Runtime.UMDataSystem
 {
     [CreateAssetMenu(fileName = "UserDataSystemInstaller", menuName = "Installers/UserDataSystemInstaller")]
     class DataSystemInstaller : ScriptableObjectInstaller<DataSystemInstaller>

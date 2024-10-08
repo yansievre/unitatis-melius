@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Plugins.UMDataSystem.Abstract;
-using UMLogger.Plugins.UMLogger.Interfaces;
+using UM.Runtime.UMDataSystem.Abstract;
+using UM.Runtime.UMLogger.Interfaces;
 
-namespace Plugins.UMDataSystem.Impl
+namespace UM.Runtime.UMDataSystem.Impl
 {
     internal class StateDataManager<T> : IStateDataManager<T>
     {

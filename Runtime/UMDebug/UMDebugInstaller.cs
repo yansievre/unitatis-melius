@@ -2,7 +2,7 @@
 using UnityEngine;
 using Zenject;
 
-namespace Plugins.UMDebug
+namespace UM.Runtime.UMDebug
 {
     [CreateAssetMenu(fileName = "UMDebugSettingsInstaller", menuName = "UMDebug/UMDebugSettingsInstaller")]
     internal class UMDebugInstaller : ScriptableObjectInstaller<UMDebugInstaller>

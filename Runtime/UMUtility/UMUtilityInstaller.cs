@@ -1,14 +1,16 @@
 #if ZENJECT
 using UnityEngine;
 using Zenject;
-using Plugins.UMUtility;
 
-[CreateAssetMenu(fileName = "UMUtilityInstaller", menuName = "Installers/UMUtilityInstaller")]
-public class UMUtilityInstaller : ScriptableObjectInstaller<UMUtilityInstaller>
+namespace UM.Runtime.UMUtility
 {
-    public override void InstallBindings()
+    [CreateAssetMenu(fileName = "UMUtilityInstaller", menuName = "Installers/UMUtilityInstaller")]
+    public class UMUtilityInstaller : ScriptableObjectInstaller<UMUtilityInstaller>
     {
-        Container.Bind<UniTaskQueue>().FromMethod(ctx => ctx.Container.Instantiate<UniTaskQueue>()).Lazy();
+        public override void InstallBindings()
+        {
+            Container.Bind<UniTaskQueue>().FromMethod(ctx => ctx.Container.Instantiate<UniTaskQueue>()).Lazy();
+        }
     }
 }
 #endif

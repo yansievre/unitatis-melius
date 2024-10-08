@@ -1,9 +1,6 @@
-namespace UM.Runtime.UMLogger.Core
+[System.Flags]
+public enum LoggerType
 {
-	[System.Flags]
-	public enum LoggerType
-	{
-		DebugLogger=2,
-		FileLogger=1,
-	}
+	DebugLogger=2,
+	FileLogger=1,
 }

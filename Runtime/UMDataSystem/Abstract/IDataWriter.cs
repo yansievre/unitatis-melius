@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace Plugins.UMDataSystem.Abstract
+namespace UM.Runtime.UMDataSystem.Abstract
 {
   
     public interface IDataWriter : IDataInfo

@@ -1,13 +1,13 @@
 #if ZENJECT
 using System.Linq;
-using Plugins.UMDebug;
-using Plugins.UMDynamicEnum.Runtime;
-using UMLogger.Plugins.UMLogger.Core;
+using UM.Runtime.UMDynamicEnum;
+using UM.Runtime.UMLogger.Core;
+using UM.Runtime.UMUtility;
 using UnityEngine;
 using Zenject;
 
-[assembly:EnumGeneration("LoggerType","Assets/Plugins/unitatis-melius/UMLogger/Core",true)]
-namespace UMLogger.Plugins.UMLogger
+[assembly:EnumGeneration("LoggerType","Assets/Plugins/unitatis-melius/Runtime/UMLogger/Core",true)]
+namespace UM.Runtime.UMLogger
 {
     
     [CreateAssetMenu(fileName = "UMLoggerInstaller", menuName = "Installers/UMLoggerInstaller")]
@@ -17,13 +17,13 @@ namespace UMLogger.Plugins.UMLogger
         public LogLevel logLevel;
         public override void InstallBindings()
         {
-            if (loggerTypes.HasFlag(LoggerType.DebugLogger))
-            {
-                Container.BindInterfacesTo<DebugLogger>().AsSingle().NonLazy();
-            }
-            if (loggerTypes.HasFlag(LoggerType.FileLogger))
+            if (loggerTypes.CheckBitFlag(1))
             {
                 Container.BindInterfacesTo<FileLogger>().AsSingle().NonLazy();
+            }
+            if (loggerTypes.CheckBitFlag(2))
+            {
+                Container.BindInterfacesTo<DebugLogger>().AsSingle().NonLazy();
             }
 
  

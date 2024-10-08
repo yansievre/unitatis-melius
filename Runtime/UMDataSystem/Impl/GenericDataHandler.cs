@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using Cysharp.Threading.Tasks;
-using Plugins.UMDataSystem.Abstract;
+using UM.Runtime.UMDataSystem.Abstract;
 
-namespace Plugins.UMDataSystem.Impl
+namespace UM.Runtime.UMDataSystem.Impl
 {
     public class GenericDataHandler<T> : IDataHandler<T>
     {

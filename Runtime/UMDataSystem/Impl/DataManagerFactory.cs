@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Plugins.UMDataSystem.Abstract;
+using UM.Runtime.UMDataSystem.Abstract;
 using Zenject;
 
-namespace Plugins.UMDataSystem.Impl
+namespace UM.Runtime.UMDataSystem.Impl
 {
    
     public class DataManagerFactory : IFactory

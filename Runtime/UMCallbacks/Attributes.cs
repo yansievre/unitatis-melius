@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UM.Runtime.UMRefresh
+namespace UM.Runtime.UMCallbacks
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class Attributes : Attribute

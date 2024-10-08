@@ -1,4 +1,4 @@
-﻿namespace Plugins.UMDataSystem.Abstract
+﻿namespace UM.Runtime.UMDataSystem.Abstract
 {
     public interface IDataInfo
     {

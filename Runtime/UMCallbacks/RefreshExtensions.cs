@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UM.Runtime.UMRefresh
+﻿namespace UM.Runtime.UMCallbacks
 {
     public static class RefreshExtensions
     {

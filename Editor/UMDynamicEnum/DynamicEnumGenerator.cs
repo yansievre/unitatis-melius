@@ -73,7 +73,7 @@ namespace UM.Editor.UMDynamicEnum
             var definedInAssembly = typeof(EnumProviderAttribute).Assembly.GetName().Name;
             foreach (var assembly in allAssemblies)
             {
-                if (assembly.GetReferencedAssemblies().All(a => a.Name != definedInAssembly)) continue;
+                if (assembly.GetName().Name != definedInAssembly && assembly.GetReferencedAssemblies().All(a => a.Name != definedInAssembly)) continue;
                 ProcessAssembly(assembly, cache);
             }
 

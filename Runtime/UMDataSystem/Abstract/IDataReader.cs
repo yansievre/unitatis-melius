@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using Cysharp.Threading.Tasks;
-using Plugins.UMDataSystem.Impl;
+using UM.Runtime.UMDataSystem.Impl;
 
-namespace Plugins.UMDataSystem.Abstract
+namespace UM.Runtime.UMDataSystem.Abstract
 {
     
     public interface IDataReader : IDataInfo
