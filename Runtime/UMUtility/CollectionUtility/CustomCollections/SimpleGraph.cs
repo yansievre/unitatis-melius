@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UM.Runtime.UMUtility.MathUtility;
+using Unity.Burst;
 
 namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
 {
@@ -10,8 +12,7 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
         private class Node
         {
             public T Value;
-            public List<Node> Parents = new List<Node>();
-            public List<Node> Children = new List<Node>();
+            public List<Node> Connections = new List<Node>();
 
             public Node(T value)
             {
@@ -21,14 +22,29 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
 
         private string _initialConnections = "";
         
-        private List<Node> _nodes = new List<Node>();
-        private List<Node> _roots = new List<Node>();
+        private Dict<T, Node> _nodes = new Dict<T, Node>();
+        
+        private Node GetNode(T value)
+        {
+            return _nodes.TryGetValue(value, out var node) ? node : null;
+        }
 
+        public IEnumerable<T> GetConnections(T value)
+        {
+            var node = GetNode(value);
+            return node?.Connections.Select(x => x.Value);
+        }
+        
+        public IEnumerable<T> GetNodes()
+        {
+            return _nodes.Keys;
+        }
+        
         public void AddConnection(T from, T to)
         {
-            var fromNode = _nodes.FirstOrDefault(x => x.Value.Equals(from));
-            var toNode = _nodes.FirstOrDefault(x => x.Value.Equals(to));
-            if(fromNode==null) _nodes.Add(fromNode=new Node(from));
+            var fromNode = GetNode(from);
+            var toNode = GetNode(to);
+            if(fromNode==null) _nodes.Add(from, fromNode=new Node(from));
             if (toNode == null)
             {
                 if (from.Equals(to))
@@ -37,125 +53,121 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
                 }
                 else
                 {
-                    _nodes.Add(toNode=new Node(to));
+                    _nodes.Add(to, toNode=new Node(to));
                 }
             }
-            fromNode.Children.Add(toNode);
-            toNode.Parents.Add(fromNode);
-            if(fromNode.Parents.Count==0 && !_roots.Contains(fromNode)) _roots.Add(fromNode);
-            if(fromNode.Parents.Count!=0 && _roots.Contains(fromNode)) _roots.Remove(fromNode);
-            if(_roots.Contains(toNode)) _roots.Remove(toNode);
-            _initialConnections += $"{from} -> {to} : ";
+            fromNode.Connections.Add(toNode);
+            toNode.Connections.Add(fromNode);
+            _initialConnections += $"{from} <-> {to} : ";
         }
 
         public void RemoveNode(T nodeValue)
         {
-            var node = _nodes.FirstOrDefault(x => x.Value.Equals(nodeValue));
+            var node = GetNode(nodeValue);
             if (node == null) return;
-            _nodes.Remove(node);
-            if (_roots.Contains(node)) _roots.Remove(node);
+            _nodes.Remove(nodeValue);
         }
         public void RemoveConnection(T from, T to)
         {
-            var fromNode = _nodes.FirstOrDefault(x => x.Value.Equals(from));
-            var toNode = _nodes.FirstOrDefault(x => x.Value.Equals(to));
+            var fromNode = GetNode(from);
+            var toNode = GetNode(to);
             if (fromNode == null) return;
             if(toNode==null)  return;
-            if (!fromNode.Children.Contains(toNode) || !toNode.Parents.Contains(fromNode)) return;
-            fromNode.Children.Remove(toNode);
-            if(fromNode.Children.Count==0 && fromNode.Parents.Count==0) RemoveNode(fromNode.Value);
-            toNode.Parents.Remove(fromNode);
-            if(toNode.Children.Count==0 && toNode.Parents.Count==0) RemoveNode(toNode.Value);
+            if (!fromNode.Connections.Contains(toNode)) return;
+            fromNode.Connections.Remove(toNode);
         }
-
-        public T[] GetRoots()
-        {
-            return _roots.Select(x=>x.Value).ToArray();
-        }
-
+        
         public override string ToString()
         {
             var st = "";
-            foreach (var node in _nodes)
+            foreach (var node in _nodes.Values)
             {
-                foreach (var ch in node.Children)
+                foreach (var ch in node.Connections)
                 {
                     st += $"{node.Value} -> {ch.Value} : ";
                 }
             }
             return st;
         }
-
-        public bool CheckForCircularDependency(bool selfConnectionsAllowed,ref Tuple<T,T> invalidConnection)
-        {
-            invalidConnection = Tuple.Create<T,T>(default, default);
-            HashSet<T> visited = new HashSet<T>();
-            foreach (var root in _roots)
-            {
-                visited.Clear();
-                var result = VisitNode(null,root, ref visited, ref invalidConnection);
-                if (result) return true;
-            }
-
-            bool VisitNode(Node visitorParent, Node node, ref HashSet<T> visitedSet,ref Tuple<T,T> foundInvalidConnection)
-            {
-                if (visitedSet.Contains(node.Value))
-                {
-                    foundInvalidConnection = Tuple.Create<T,T>(visitorParent.Value,node.Value);
-                    return true;
-                }
-                visitedSet.Add(node.Value);
-                foreach (var childNode in node.Children)
-                {
-                    if (selfConnectionsAllowed && childNode.Value.Equals(node.Value))
-                    {
-                        continue;
-                    }
-                    var res = VisitNode(node,childNode, ref visitedSet,ref  foundInvalidConnection);
-                    if (res) return true;
-                }
-
-                return false;
-            }
-            return false;
-        }
+        
+        // Leftover from directional graph
+        // public bool CheckForCircularDependency(bool selfConnectionsAllowed,ref UnorderedPair<T> invalidConnection)
+        // {
+        //     invalidConnection = UnorderedPair<T>.Empty;
+        //     HashSet<T> visited = new HashSet<T>();
+        //     foreach (var root in _roots)
+        //     {
+        //         visited.Clear();
+        //         var result = VisitNode(null,root, ref visited, ref invalidConnection);
+        //         if (result) return true;
+        //     }
+        //
+        //     bool VisitNode(Node visitorParent, Node node, ref HashSet<T> visitedSet,ref UnorderedPair<T> foundInvalidConnection)
+        //     {
+        //         if (visitedSet.Contains(node.Value))
+        //         {
+        //             foundInvalidConnection = UnorderedPair.Create<T>(visitorParent.Value,node.Value);
+        //             return true;
+        //         }
+        //         visitedSet.Add(node.Value);
+        //         foreach (var childNode in node.Children)
+        //         {
+        //             if (selfConnectionsAllowed && childNode.Value.Equals(node.Value))
+        //             {
+        //                 continue;
+        //             }
+        //             var res = VisitNode(node,childNode, ref visitedSet,ref  foundInvalidConnection);
+        //             if (res) return true;
+        //         }
+        //
+        //         return false;
+        //     }
+        //     return false;
+        // }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="selfConnectionsAllowed"></param>
         /// <returns>Found and fixed</returns>
-        public bool FixCircularDependency(bool selfConnectionsAllowed)
-        {
-            Tuple<T, T> invalidConnection = null;
-            bool didFind = false;
-            int counter = 0;
-            while (CheckForCircularDependency(selfConnectionsAllowed, ref invalidConnection))
-            {
-                RemoveConnection(invalidConnection.Item1,invalidConnection.Item2);
-                didFind = true;
-                counter++;
-                if (counter >= MaxLoops)
-                {
-                    throw new Exception("Infinite loop?");
-                }
-            }
+        // public bool FixCircularDependency(bool selfConnectionsAllowed)
+        // {
+        //     UnorderedPair<T> invalidConnection = UnorderedPair<T>.Empty;
+        //     bool didFind = false;
+        //     int counter = 0;
+        //     while (CheckForCircularDependency(selfConnectionsAllowed, ref invalidConnection))
+        //     {
+        //         RemoveConnection(invalidConnection.first,invalidConnection.second);
+        //         didFind = true;
+        //         counter++;
+        //         if (counter >= MaxLoops)
+        //         {
+        //             throw new Exception("Infinite loop?");
+        //         }
+        //     }
+        //
+        //     return didFind;
+        // }
 
-            return didFind;
-        }
-
-        public Tuple<T, T>[] GetConnections()
+        public UnorderedPair<T>[] GetConnections()
         {
-            List<Tuple<T, T>> connections = new List<Tuple<T, T>>();
-            foreach (var node in _nodes)
+            List<UnorderedPair<T>> connections = new List<UnorderedPair<T>>();
+            foreach (var node in _nodes.Values)
             {
-                foreach (var child in node.Children)
+                foreach (var child in node.Connections)
                 {
-                    connections.Add(Tuple.Create(node.Value,child.Value));
+                    connections.Add(UnorderedPair<T>.Create(node.Value, child.Value));
                 }
             }
 
             return connections.ToArray();
         }
+        
+        public List<T> GetShortestPathDijkstra(T start, T end)
+        {
+            var dijsktra = new Dijsktra<T>(GetNodes,  GetConnections, (_, _) => 1);
+            return dijsktra.GetShortestPath(start, end);
+        }
+        
     }
 }

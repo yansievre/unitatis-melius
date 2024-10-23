@@ -9,6 +9,7 @@ namespace UM.Runtime.UMUtility.Attributes
         GetComponentInParent = 1,
         GetComponentInChildren = 2,
         FindFirstInScene = 4,
+        ChildName = 14,
         /// <summary>
         /// Collections only
         /// </summary>
@@ -32,11 +33,19 @@ namespace UM.Runtime.UMUtility.Attributes
     {
         public bool AutoFetch { get; set; }
         public FetchStrategy FetchStrategy { get; set; }
+        public string ChildName { get; set; }
 
         public FetchableFieldAttribute(FetchStrategy fetchStrategy = FetchStrategy.GetComponent, bool autoFetch = false) : base(true)
         {
             AutoFetch = autoFetch;
             FetchStrategy = fetchStrategy;
+            ChildName = "";
+        }
+        public FetchableFieldAttribute(string childName, bool autoFetch = false) : base(true)
+        {
+            AutoFetch = autoFetch;
+            FetchStrategy = FetchStrategy.ChildName;
+            ChildName = childName;
         }
     }
 }

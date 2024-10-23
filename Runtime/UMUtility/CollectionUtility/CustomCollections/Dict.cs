@@ -44,7 +44,7 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
                 Debug.LogException(new Exception($"Attempted to add key '{key.ToString()} to dictionary but this key is already registered. Will continue"));
                 return;
             }
-            Add(key,value);
+            base.Add(key,value);
         }
 
         /// <summary><para>Removes the element with the specified key from the dictionary.</para></summary>
@@ -80,7 +80,7 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
             return new Dict<TKey, TValue>();
         }
         
-        public static Dict<TKey, TValue> ToSerializableDictionary<TKey, TValue>(this Dictionary<TKey, TValue> dictionary)
+        public static Dict<TKey, TValue> ToDict<TKey, TValue>(this Dictionary<TKey, TValue> dictionary)
         {
             var serializableDictionary = new Dict<TKey, TValue>();
             foreach (var (key, value) in dictionary)
@@ -92,7 +92,7 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
         }
         
         //to serializable dictionary from enumerable
-        public static Dict<TKey, TValue> ToSerializableDictionary<TKey, TValue>(this IEnumerable<TValue> enumerable, Func<TValue, TKey> keySelector)
+        public static Dict<TKey, TValue> ToDict<TKey, TValue>(this IEnumerable<TValue> enumerable, Func<TValue, TKey> keySelector)
         {
             var serializableDictionary = new Dict<TKey, TValue>();
             foreach (var value in enumerable)
@@ -104,7 +104,7 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
         }
         
         //to serializable dictionary from enumerable
-        public static Dict<TKey, TValue> ToSerializableDictionary<TKey, TValue, TObject>(this IEnumerable<TObject> enumerable, Func<TObject, TKey> keySelector, Func<TObject, TValue> valueSelector)
+        public static Dict<TKey, TValue> ToDict<TKey, TValue, TObject>(this IEnumerable<TObject> enumerable, Func<TObject, TKey> keySelector, Func<TObject, TValue> valueSelector)
         {
             var serializableDictionary = new Dict<TKey, TValue>();
             foreach (var value in enumerable)

@@ -17,6 +17,11 @@ namespace UM.Runtime.UMUtility.CollectionUtility
             Array.Copy(cache, startIndex, array, 0, array.Length - startIndex);
             Array.Copy(cache, 0, array, array.Length - startIndex, startIndex);
         }
-        
+
+
+        public static T[] AsArray<T>(this T target)
+        {
+            return new[] { target };   
+        }
     }
 }

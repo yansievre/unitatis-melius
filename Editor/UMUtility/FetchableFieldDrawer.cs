@@ -92,6 +92,7 @@ namespace UM.Editor.UMUtility
                     FetchStrategy.GetComponent => target.GetComponent(type),
                     FetchStrategy.GetComponentInParent => target.GetComponentInParent(type),
                     FetchStrategy.GetComponentInChildren => target.GetComponentInChildren(type),
+                    FetchStrategy.ChildName => target.transform.Find(property.name)?.GetComponent(type),
                     FetchStrategy.FindFirstInScene => target.gameObject.scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren(type)).FirstOrDefault(),
                     _ => throw new ArgumentOutOfRangeException()
                 };
