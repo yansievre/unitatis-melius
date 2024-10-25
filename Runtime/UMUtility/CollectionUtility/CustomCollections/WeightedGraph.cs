@@ -13,11 +13,12 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
     public class WeightedGraph<T>
     {
         private SimpleGraph<T> _simpleGraph;
-        private Dictionary<UnorderedPair<T>, float> _connectionWeights;
+        private Dict<UnorderedPair<T>, float> _connectionWeights;
         
         public WeightedGraph()
         {
             _simpleGraph = new SimpleGraph<T>();
+            _connectionWeights = new Dict<UnorderedPair<T>, float>();
         }
         
         public UnorderedPair<T>[] GetConnections()
@@ -34,7 +35,7 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
         public void RemoveNode(T nodeValue)
         {
             _simpleGraph.RemoveNode(nodeValue);
-            _connectionWeights = _connectionWeights.Where(x => !x.Key.Contains(nodeValue)).ToDictionary(x => x.Key, x => x.Value);
+            _connectionWeights = _connectionWeights.Where(x => !x.Key.Contains(nodeValue)).ToDict(x => x.Key, x => x.Value);
         }
 
         public void RemoveConnection(T from, T to)
