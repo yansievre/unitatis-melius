@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
 {
-    public class LazyDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, ICollection where TValue : new()
+    public class LazyDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, ICollection
     {
         private class Entry
         {
@@ -27,7 +27,7 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
         public LazyDictionary()
         {
             _generatorDictionary = new Dictionary<TKey, Entry>();
-            _defaultGenerator = _ => new TValue();
+            _defaultGenerator = _ => default;
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()

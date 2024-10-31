@@ -27,6 +27,8 @@ namespace UM.Runtime.UMDataSystem.Impl
             _logger = logger;
         }
 
+        public T ActiveInstance => _instance;
+
         public void ActivateStateInstance(T state)
         {
             if (_instance != null)
@@ -49,7 +51,7 @@ namespace UM.Runtime.UMDataSystem.Impl
                     case DataState.Found:
                         try
                         {
-                            var result = await dataReader.ReadObject(token);
+                            return await dataReader.ReadObject(token);
                         }
                         catch (Exception e)
                         {

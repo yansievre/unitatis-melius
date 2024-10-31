@@ -27,7 +27,7 @@ namespace UM.Runtime.UMFileUtility
         }
     }
     
-    public class EncryptedFileWriter
+    public class EncryptedFileWriter : IFileWriter
     {
         private readonly string _encodeKey;
         private readonly string _filePath;

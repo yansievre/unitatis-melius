@@ -26,7 +26,7 @@ namespace UM.Runtime.UMFileUtility
         {
         }
     }
-    public class EncryptedFileReader
+    public class EncryptedFileReader : IFileReader
     {
         private readonly string _encodeKey;
         private readonly string _filePath;
@@ -46,52 +46,44 @@ namespace UM.Runtime.UMFileUtility
 
             var byteKey = Convert.FromBase64String(_encodeKey);
             // Create new AES instance.
-            using (var oAes = Aes.Create())
+            using var oAes = Aes.Create();
+
+            var outputIv = new byte[oAes.IV.Length];
+
+            await using var dataStream = new FileStream(_filePath, FileMode.Open);
+
+            try
             {
-                var outputIv = new byte[oAes.IV.Length];
+                var isCancelled = await dataStream.ReadAsync(outputIv, 0, outputIv.Length, token).AsUniTask(false).SuppressCancellationThrow();
+                if (isCancelled.IsCanceled) return default;
+            }
+            catch (Exception e)
+            {
+                throw new FileReaderException($"Reading IV key failed",e);
+            }
 
-                using (var dataStream = new FileStream(_filePath, FileMode.Open))
+            try
+            {
+                await using var oStream = new CryptoStream(
+                    dataStream,
+                    oAes.CreateDecryptor(byteKey, outputIv),
+                    CryptoStreamMode.Read);
+
+                using var reader = new StreamReader(oStream);
+
+                try
                 {
-                    try
-                    {
-                        var isCancelled = await dataStream.ReadAsync(outputIv, 0, outputIv.Length, token).AsUniTask(false).SuppressCancellationThrow();
-                        if (isCancelled.IsCanceled) return default;
-                    }
-                    catch (Exception e)
-                    {
-                        throw new FileReaderException($"Reading IV key failed",e);
-                    }
-
-                    try
-                    {
-                        using (var oStream = new CryptoStream(
-                            dataStream,
-                            oAes.CreateDecryptor(byteKey, outputIv),
-                            CryptoStreamMode.Read))
-                        {
-                            using (var reader = new StreamReader(oStream))
-                            {
-                                try
-                                {
-                                    var res = await reader.ReadToEndAsync().AsUniTask(false).AttachExternalCancellation(token).SuppressCancellationThrow();
-                                    if (res.IsCanceled) return default;
-                                    return res.Result;
-                                }
-                                catch (Exception e)
-                                {
-                                    throw new FileReaderException($"Reading encrypted file failed",e);
-                                }
-                            }
-
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        throw new FileReaderException($"Reading encrypted file failed",e);
-                    }
+                    var res = await reader.ReadToEndAsync().AsUniTask(false).AttachExternalCancellation(token).SuppressCancellationThrow();
+                    return res.IsCanceled ? default : res.Result;
                 }
-
-                
+                catch (Exception e)
+                {
+                    throw new FileReaderException($"Reading encrypted file failed",e);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new FileReaderException($"Reading encrypted file failed",e);
             }
         }
     }

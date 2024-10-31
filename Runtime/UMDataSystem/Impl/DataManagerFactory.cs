@@ -8,14 +8,11 @@ namespace UM.Runtime.UMDataSystem.Impl
     public class DataManagerFactory : IFactory
     {
         readonly DiContainer _container;
-        readonly List<UnityEngine.Object> _prefabs;
 
         public DataManagerFactory(
-            List<UnityEngine.Object> prefabs,
             DiContainer container)
         {
             _container = container;
-            _prefabs = prefabs;
         }
         
         /// <summary>
