@@ -46,7 +46,7 @@ namespace UM.Runtime.UMDataSystem.Impl
 
         private string GeneratePath()
         {
-            return Path.Combine(Application.dataPath, DataFileName);
+            return Path.Combine(Application.persistentDataPath, DataFileName);
         }
         
         public UniTask<string> ReadData(CancellationToken token)

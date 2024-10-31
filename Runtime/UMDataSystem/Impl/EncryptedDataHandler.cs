@@ -30,7 +30,7 @@ namespace UM.Runtime.UMDataSystem.Impl
 
         private string GeneratePath(string userId, string fileName)
         {
-            return Path.Combine(Application.dataPath,userId,fileName+".json");
+            return Path.Combine(Application.persistentDataPath,userId,fileName+".json");
         }
         
         public async UniTask<string> ReadData(CancellationToken token)
