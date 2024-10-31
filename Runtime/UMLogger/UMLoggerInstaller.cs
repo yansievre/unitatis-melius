@@ -35,7 +35,7 @@ namespace UM.Runtime.UMLogger
                 {
                     targetLogLevel = logLevel & overrideLogLevel.LogLevel;
                 }
-                return ctx.Container.Instantiate<Core.UMLogger>(new object[]{ctx.ObjectInstance,targetLogLevel});
+                return ctx.Container.Instantiate<Core.UMLogger>(new object[]{ctx.ObjectType,targetLogLevel});
             });
         }
     }

@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UM.Runtime.UMDataSystem.Abstract;
 using UM.Runtime.UMLogger.Interfaces;
+using Zenject;
 
 namespace UM.Runtime.UMDataSystem.Impl
 {
@@ -20,6 +21,7 @@ namespace UM.Runtime.UMDataSystem.Impl
             _dataReaders = readers;
             _logger = logger;
         }
+        
         public StateDataManager(IDataHandler<T> dataHandler,IDataReader<T>[] alternativeReaders, IUMLogger logger)
         {
             _dataWriter = dataHandler;
@@ -40,28 +42,20 @@ namespace UM.Runtime.UMDataSystem.Impl
 
         public async UniTask<T> LoadStateData(CancellationToken token)
         {
-            foreach (var dataReader in _dataReaders)
+            var firstValidReader = _dataReaders.FirstOrDefault(x => x.CheckFile() == DataState.Found) ?? _dataReaders.FirstOrDefault();
+
+            if (firstValidReader == null)
+                throw new DataSystemException("No data reader found");
+
+            try
             {
-                var fileState = dataReader.CheckFile();
-                switch (fileState)
-                {
-                    case DataState.NotFound:
-                        continue;
-                    case DataState.Unknown:
-                    case DataState.Found:
-                        try
-                        {
-                            return await dataReader.ReadObject(token);
-                        }
-                        catch (Exception e)
-                        {
-                           _logger.LogWarning($"Failed to read data with {dataReader.GetType().Name}"); 
-                        }
-                        continue;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                return await firstValidReader.ReadObject(token);
             }
+            catch (Exception e)
+            {
+               _logger.LogWarning($"Failed to read data with {firstValidReader.GetType().Name}"); 
+            }
+            
             throw new DataSystemException("Failed to read data from any source");
         }
 

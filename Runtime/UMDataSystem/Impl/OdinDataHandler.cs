@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using R3;
 using Sirenix.Serialization;
 using UM.Runtime.UMDataSystem.Abstract;
 using UM.Runtime.UMFileUtility;
@@ -19,28 +20,19 @@ namespace UM.Runtime.UMDataSystem.Impl
 {
     public class OdinDataHandler<T> : IDataHandler<T>
     {
+        private readonly bool _encryptionEnabled;
         private const string K_EncodeKey = "2D4A614E645266556A586E3272357538";
         private const string K_SaveGameName = "Save_";
-        private readonly IDataReader _fileReader;
-        private readonly IDataWriter _fileWriter;
         
         public OdinDataHandler(int saveSlot, bool encryptionEnabled = false)
         {
+            _encryptionEnabled = encryptionEnabled;
             DataFileNameWithoutExtension = K_SaveGameName + saveSlot;
             DataFileExtension = "json";
             DataPath = GeneratePath();
             EnsureDirectory();
             
             
-            Stream reader = new FileStream(DataPath, FileMode.OpenOrCreate, FileAccess.Read);
-            if(encryptionEnabled) reader = new EncryptedStream(reader, K_EncodeKey, CryptoStreamMode.Read);
-            _fileReader = SerializationUtility.CreateReader(reader,
-                new DeserializationContext(new StreamingContext(StreamingContextStates.File)), DataFormat.Binary);
-            
-            Stream writer = new FileStream(DataPath, FileMode.OpenOrCreate, FileAccess.Write);
-            if(encryptionEnabled) writer = new EncryptedStream(writer, K_EncodeKey, CryptoStreamMode.Write);
-            _fileWriter = SerializationUtility.CreateWriter(writer,
-                new SerializationContext(new StreamingContext(StreamingContextStates.File)), DataFormat.Binary);
             
         }
 
@@ -68,13 +60,23 @@ namespace UM.Runtime.UMDataSystem.Impl
 
         public UniTask<T> ReadObject(CancellationToken token)
         {
+            DisposableBag db = new();
+            Stream reader = new FileStream(DataPath, FileMode.OpenOrCreate, FileAccess.Read).AddTo(ref db);
+            if(_encryptionEnabled) reader = new EncryptedStream(reader, K_EncodeKey, CryptoStreamMode.Read).AddTo(ref db);
+            var fileReader = SerializationUtility.CreateReader(reader,
+                new DeserializationContext(new StreamingContext(StreamingContextStates.File)), DataFormat.Binary).AddTo(ref db);
+
             try
             {
-                return UniTask.FromResult(SerializationUtility.DeserializeValue<T>(_fileReader));
+                return UniTask.FromResult(SerializationUtility.DeserializeValue<T>(fileReader));
             }
             catch (Exception e)
             {
                 throw new DataSystemException("Failed to deserialize object", e);
+            }
+            finally
+            {
+                db.Dispose();
             }
         }
 
@@ -85,10 +87,17 @@ namespace UM.Runtime.UMDataSystem.Impl
         
         public UniTask<bool> WriteData(T targetObject, CancellationToken token)
         {
+            DisposableBag db = new();
+            Stream writer = new FileStream(DataPath, FileMode.OpenOrCreate, FileAccess.Write).AddTo(ref db);
+            if(_encryptionEnabled) writer = new EncryptedStream(writer, K_EncodeKey, CryptoStreamMode.Write).AddTo(ref db);
+            var fileWriter = SerializationUtility.CreateWriter(writer,
+                new SerializationContext(new StreamingContext(StreamingContextStates.File)), DataFormat.Binary).AddTo(ref db);;
+
             try
             {
-                SerializationUtility.SerializeValue(targetObject, _fileWriter, out var list);
-                if(list.Count > 0) throw new DataSystemException("Failed to serialize object");
+                SerializationUtility.SerializeValue(targetObject, fileWriter, out var list);
+
+                if (list.Count > 0) throw new DataSystemException("Failed to serialize object");
 
                 return UniTask.FromResult<bool>(true);
             }
@@ -97,6 +106,10 @@ namespace UM.Runtime.UMDataSystem.Impl
                 throw new DataSystemException("Failed to serialize object", e);
 
                 return UniTask.FromResult<bool>(false);
+            }
+            finally
+            {
+                db.Dispose();
             }
         }
         public string DataPath { get; set; }

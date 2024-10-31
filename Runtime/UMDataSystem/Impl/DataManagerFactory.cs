@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UM.Runtime.UMDataSystem.Abstract;
 using Zenject;
 
@@ -36,7 +37,7 @@ namespace UM.Runtime.UMDataSystem.Impl
         /// <returns></returns>
         public IStateDataManager<T> Create<T>(IDataHandler<T> dataHandler,IDataReader<T>[] alternativeReaders)
         {
-            return _container.Instantiate<StateDataManager<T>>(new object[]{dataHandler,alternativeReaders});
+            return _container.Instantiate<StateDataManager<T>>(new object[]{alternativeReaders.Prepend(dataHandler).ToArray(), dataHandler as IDataWriter<T>});
         }
     }
 }
