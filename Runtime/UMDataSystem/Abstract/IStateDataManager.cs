@@ -10,5 +10,6 @@ namespace UM.Runtime.UMDataSystem.Abstract
         UniTask<T> LoadStateData(CancellationToken token);
         UniTask<bool> LoadStateDataAndActivate(CancellationToken token);
         UniTask<bool> SaveStateData(CancellationToken token);
+        bool SaveExists();
     }
 }

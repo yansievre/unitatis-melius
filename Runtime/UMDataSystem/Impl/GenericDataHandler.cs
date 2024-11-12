@@ -45,10 +45,5 @@ namespace UM.Runtime.UMDataSystem.Impl
         {
             return _dataWriterImpl.WriteData(serializedData, token);
         }
-
-        public string DataPath => _dataWriterImpl.DataPath;
-        public string DataFileName => _dataWriterImpl.DataFileName;
-        public string DataFileExtension => _dataWriterImpl.DataFileExtension;
-        public string DataFileNameWithoutExtension => _dataWriterImpl.DataFileNameWithoutExtension;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ObservableCollections;
+using UnityEditor;
 using UnityEngine;
 
 namespace UM.Runtime.UMUtility.ReactiveUtility
@@ -8,7 +9,7 @@ namespace UM.Runtime.UMUtility.ReactiveUtility
     [Serializable]
     public class SerializableObservableList<T> : ObservableList<T>, ISerializationCallbackReceiver
     {
-        [SerializeField]
+        [SerializeField, HideInInspector]
         internal List<T> serializedList;
 
         public SerializableObservableList()
@@ -33,6 +34,10 @@ namespace UM.Runtime.UMUtility.ReactiveUtility
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             Clear();
+            if(serializedList == null)
+            {
+                serializedList = new List<T>();
+            }
             foreach (var item in serializedList)
             {
                 Add(item);
@@ -41,13 +46,18 @@ namespace UM.Runtime.UMUtility.ReactiveUtility
     }
     
 #if UNITY_EDITOR
-    internal class SerializableObservableListPropertyDrawer<TList, TElement> : Sirenix.OdinInspector.Editor.OdinValueDrawer<TList>
-        where TList : SerializableObservableList<TElement> // Using IList lets the CustomListDrawer work for both List and arrays.
-    {
-        protected override void DrawPropertyLayout(GUIContent label)
-        {
-            ValueEntry.Property.FindChild(x => x.Name == nameof(SerializableObservableList<TElement>.serializedList), false).Draw(label);
-        }
-    }
+    // internal class SerializableObservableListPropertyDrawer<TList, TElement> : Sirenix.OdinInspector.Editor.OdinValueDrawer<TList>
+    //     where TList : SerializableObservableList<TElement> // Using IList lets the CustomListDrawer work for both List and arrays.
+    // {
+    //     protected override void DrawPropertyLayout(GUIContent label)
+    //     {
+    //         EditorGUI.BeginChangeCheck();
+    //         ValueEntry.Property.FindChild(x => x.Name == "serializedList", false).Draw(label);
+    //         if (EditorGUI.EndChangeCheck())
+    //         {
+    //             ValueEntry.SmartValue.
+    //         }
+    //     }
+    // }
 #endif
 }

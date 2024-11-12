@@ -1,32 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Sirenix.Serialization;
+using UM.Runtime.UMUtility.CollectionUtility.CustomCollections;
 using UnityEngine;
 
+#if ODIN_INSPECTOR
+[assembly: RegisterFormatter(typeof(Dict<,>.DictFormatter<,>))]
+#endif
 namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
 {
+    
     [Serializable]
     public class Dict<TKey,TValue> : Dictionary<TKey,TValue>, ISerializationCallbackReceiver
     {
-        [SerializeField, HideInInspector]
-        private List<TKey> _keyData = new();
-	
-        [SerializeField, HideInInspector]
-        private List<TValue> _valueData = new();
+#if ODIN_INSPECTOR
+        public class DictFormatter<TKey, TValue> : MinimalBaseFormatter<Dict<TKey, TValue>>
+        {
+            private static readonly Serializer<List<TKey>> KeySerializer = Serializer.Get<List<TKey>>();
+            private static readonly Serializer<List<TValue>> ValueSerializer = Serializer.Get<List<TValue>>();
 
+            protected override void Read(ref Dict<TKey, TValue> value, IDataReader reader)
+            {
+                value._keyData = KeySerializer.ReadValue(reader);
+                value._valueData = ValueSerializer.ReadValue(reader);
+            }
+	
+            protected override void Write(ref Dict<TKey, TValue> value, IDataWriter writer)
+            {
+                KeySerializer.WriteValue(value._keyData, writer);
+                ValueSerializer.WriteValue(value._valueData, writer);
+            }
+        }
+#endif
+        [SerializeField, HideInInspector]
+        private List<TKey> _keyData;
+	       
+        [SerializeField, HideInInspector]
+        private List<TValue> _valueData;
+        
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
+            if (_keyData == null || _valueData == null)
+                return;
             Clear();
             for (int i = 0; i < _keyData.Count && i < _valueData.Count; i++)
             {
                 this[_keyData[i]] = _valueData[i];
             }
         }
-
+        
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            _keyData.Clear();
-            _valueData.Clear();
-
+            _keyData = new List<TKey>(Count);
+            _valueData = new List<TValue>(Count);
+        
             foreach (var item in this)
             {
                 _keyData.Add(item.Key);
@@ -70,6 +98,13 @@ namespace UM.Runtime.UMUtility.CollectionUtility.CustomCollections
                 if (this.ContainsKey(key)) base[key] = value;
                 else Add(key,value);
             }
+        }
+
+        public override string ToString()
+        {
+            var values = string.Join(",\n\t", this.Select(x => $"{x.Key.ToString()} : {x.Value.ToString()}"));
+            string result = "{\n\t" + values + "\n}";
+            return result;
         }
     }
     

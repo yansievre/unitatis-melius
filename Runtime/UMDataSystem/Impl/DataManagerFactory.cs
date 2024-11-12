@@ -35,7 +35,7 @@ namespace UM.Runtime.UMDataSystem.Impl
         /// <param name="alternativeReaders"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IStateDataManager<T> Create<T>(IDataHandler<T> dataHandler,IDataReader<T>[] alternativeReaders)
+        public IStateDataManager<T> Create<T>(IDataHandler<T> dataHandler, params IDataReader<T>[] alternativeReaders)
         {
             return _container.Instantiate<StateDataManager<T>>(new object[]{alternativeReaders.Prepend(dataHandler).ToArray(), dataHandler as IDataWriter<T>});
         }

@@ -39,6 +39,30 @@ namespace UM.Runtime.UMDataSystem.Impl
             }
             _instance = state;
         }
+        
+        public void ActivateStateInstanceFromCopy(T state)
+        {
+            if (_instance != null)
+            {
+                _logger.LogWarning("Replacing previous instance");
+            }
+            _instance = state;
+        }
+
+        public bool SaveExists()
+        {
+            var firstValidReader = _dataReaders.FirstOrDefault(x => x.CheckFile() == DataState.Found) ?? _dataReaders.FirstOrDefault();
+
+            if (firstValidReader == null)
+                throw new DataSystemException("No data reader found");
+
+            return firstValidReader.CheckFile() switch
+            {
+                DataState.Found => true,
+                DataState.NotFound => false,
+                _ => throw new DataSystemException("Failed to check file")
+            };
+        }
 
         public async UniTask<T> LoadStateData(CancellationToken token)
         {

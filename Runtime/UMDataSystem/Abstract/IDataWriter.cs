@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 namespace UM.Runtime.UMDataSystem.Abstract
 {
   
-    public interface IDataWriter : IDataInfo
+    public interface IDataWriter
     {
         /// <summary>
         /// Reads serialized data

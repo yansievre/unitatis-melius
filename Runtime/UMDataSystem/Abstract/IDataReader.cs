@@ -5,7 +5,7 @@ using UM.Runtime.UMDataSystem.Impl;
 namespace UM.Runtime.UMDataSystem.Abstract
 {
     
-    public interface IDataReader : IDataInfo
+    public interface IDataReader
     {
         /// <summary>
         /// Reads serialized data
